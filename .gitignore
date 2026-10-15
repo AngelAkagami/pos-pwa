@@ -2,6 +2,10 @@
 # Nunca se versiona: se copia desde js/config.example.js
 js/config.js
 
+# Paquete publicable que genera prepare-deploy.ps1.
+# Contiene una COPIA de js/config.js: jamás debe subirse al repositorio.
+deploy/
+
 # Dependencias
 node_modules/
 package-lock.json
