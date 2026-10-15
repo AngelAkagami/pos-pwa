@@ -204,18 +204,35 @@ tras editar el JSON, vuelve a generarlo con el mismo patrón
 
 ---
 
-## Preparación para Netlify (sin desplegar todavía)
+## Despliegue en Netlify (sitio conectado a GitHub)
 
-1. Verifica que `js/config.js` **no** esté en el repositorio
-   (`git status --ignored`).
-2. Opciones de configuración:
-   - **Recomendada:** crea `js/config.js` en Netlify mediante
-     *Site configuration → Environment variables* y un pequeño paso de build
-     que lo genere, **o**
-   - Agrégalo manualmente al sitio ya desplegado (no al repo).
-3. `netlify.toml` ya define `publish = "."` y cabeceras de seguridad.
-4. Despliegue: `netlify deploy --prod` o conecta el repositorio en la
-   interfaz de Netlify. **Este paso no se ejecutó todavía, por instrucción.**
+- **Sitio:** <https://tablero-kenal.netlify.app/> — conectado al repositorio
+  de GitHub; **cada `git push` genera un deploy automático**.
+- `js/config.js` **no** está en el repositorio (`.gitignore`); en cada build
+  lo genera `scripts/generate-config.js` a partir de las **Environment
+  variables** del sitio (Netlify → *Site configuration → Environment
+  variables*):
+
+  | Variable | Valor / origen | Obligatoria |
+  | --- | --- | --- |
+  | `SUPABASE_URL` | Project URL (`https://sfotsgmjxlkvotyttaoa.supabase.co`) | sí |
+  | `SUPABASE_ANON_KEY` | clave `anon` / `publishable` (pública por diseño) | sí |
+  | `SUPABASE_BOARD_SLUG` | default `xp-tablero-9f3a7c2e` | no |
+  | `SUPABASE_MEMBERS` | `Milca,Diana,Giovanni,Christian,Angel` | no |
+
+- `netlify.toml` define `command = "node scripts/generate-config.js"` y
+  `publish = "."`, más las cabeceras de seguridad.
+- **Si falta una variable obligatoria el build falla a propósito**: no se
+  publica una versión rota y el deploy anterior sigue visible hasta corregir
+  y reintentar (*Deploys → Retry deploy*).
+- **Nunca** configures `service_role` ni `sb_secret_` en Netlify: el
+  frontend solo usa la clave anon y la seguridad la dan las políticas RLS
+  de `supabase/schema.sql`.
+- Verificación: `https://tablero-kenal.netlify.app/js/config.js` debe
+  responder **200** con `window.XP_CONFIG` (si da 404, falta el build;
+  si da 404 o el build falla, revisa las variables).
+- **Emergencia (deploy manual sin tocar Git):** `.\prepare-deploy.ps1` y
+  arrastrar la carpeta `deploy\` a la pestaña *Deploys* del sitio existente.
 
 ---
 

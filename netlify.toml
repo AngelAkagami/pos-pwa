@@ -1,11 +1,16 @@
-# netlify.toml — preparación para despliegue estático.
-# Aún NO se despliega; este archivo solo deja listo el sitio.
+# netlify.toml — sitio publicado en https://tablero-kenal.netlify.app/
+# Conectado a GitHub (github.com/AngelAkagami/pos-pwa): cada push despliega.
 #
-# El sitio es 100% estático: no hay build de npm ni transformaciones.
+# El sitio es 100% estático. El ÚNICO paso de build genera js/config.js
+# (que Git ignora a propósito) desde las Environment variables del sitio:
+#   SUPABASE_URL, SUPABASE_ANON_KEY [, SUPABASE_BOARD_SLUG, SUPABASE_MEMBERS]
+# Si faltan variables, el build falla y NO se publica una versión rota.
+#
 # Frontend (Netlify) + backend (Supabase). Netlify NO sincroniza datos
 # entre usuarios: eso lo hace Supabase Realtime.
 
 [build]
+  command = "node scripts/generate-config.js"
   publish = "."
 
 [build.environment]
