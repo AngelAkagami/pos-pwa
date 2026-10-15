@@ -145,26 +145,20 @@ create index if not exists task_events_task_idx on public.task_events (task_id, 
 --   * Cada escritura debe afectar exactamente 1 fila (el cliente lo
 --     verifica con .select() y comprobando longitud del resultado).
 -- ---------------------------------------------------------------------
+-- BEFORE: normalizar campos de la tarea antes de almacenarla.
+-- No insertar eventos aquí: la tarea todavía no existe para la FK.
 create or replace function public.tasks_touch() returns trigger
 language plpgsql
 security definer
 set search_path = public
 as $$
 begin
-  if tg_op = 'INSERT' then
-    new.updated_at := now();
-    new.version := 1;
-    insert into public.task_events (task_id, action, new_value, actor_name)
-    values (new.id, 'insert', to_jsonb(new), new.updated_by);
-    return new;
-  end if;
-
   new.updated_at := now();
-  new.version := old.version + 1;
-
-  insert into public.task_events (task_id, action, previous_value, new_value, actor_name)
-  values (new.id, 'update', to_jsonb(old), to_jsonb(new), new.updated_by);
-
+  if tg_op = 'INSERT' then
+    new.version := 1;
+  else
+    new.version := old.version + 1;
+  end if;
   return new;
 end $$;
 
@@ -172,6 +166,28 @@ drop trigger if exists tasks_touch on public.tasks;
 create trigger tasks_touch
   before insert or update on public.tasks
   for each row execute function public.tasks_touch();
+
+-- AFTER: registrar auditoría cuando ya existe la fila padre.
+create or replace function public.tasks_audit() returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if tg_op = 'INSERT' then
+    insert into public.task_events (task_id, action, new_value, actor_name)
+    values (new.id, 'insert', to_jsonb(new), new.updated_by);
+  else
+    insert into public.task_events (task_id, action, previous_value, new_value, actor_name)
+    values (new.id, 'update', to_jsonb(old), to_jsonb(new), new.updated_by);
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists tasks_audit on public.tasks;
+create trigger tasks_audit
+  after insert or update on public.tasks
+  for each row execute function public.tasks_audit();
 
 -- ---------------------------------------------------------------------
 -- Row Level Security
