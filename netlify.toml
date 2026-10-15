@@ -4,7 +4,8 @@
 # El sitio es 100% estático. El ÚNICO paso de build genera js/config.js
 # (que Git ignora a propósito) desde las Environment variables del sitio:
 #   SUPABASE_URL, SUPABASE_ANON_KEY [, SUPABASE_BOARD_SLUG, SUPABASE_MEMBERS]
-# Si faltan variables, el build falla y NO se publica una versión rota.
+# Si faltan URL/clave se usan los valores de respaldo de generate-config.js.
+# Si los valores son inválidos, el build falla y NO se publica una versión rota.
 #
 # Frontend (Netlify) + backend (Supabase). Netlify NO sincroniza datos
 # entre usuarios: eso lo hace Supabase Realtime.

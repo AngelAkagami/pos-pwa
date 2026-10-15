@@ -7,8 +7,8 @@
  * en cada deploy conectado a GitHub.
  *
  * Variables:
- *   SUPABASE_URL        (obligatoria) Project URL  https://xxx.supabase.co
- *   SUPABASE_ANON_KEY   (obligatoria) clave anon/publishable (pública)
+ *   SUPABASE_URL        (opcional)    Project URL; respaldo DEFAULT_URL
+ *   SUPABASE_ANON_KEY   (opcional)    clave publishable; respaldo DEFAULT_KEY
  *   SUPABASE_BOARD_SLUG (opcional)    default xp-tablero-9f3a7c2e
  *   SUPABASE_MEMBERS    (opcional)    "Milca,Diana,Giovanni,Christian,Angel"
  *
@@ -23,6 +23,11 @@ var path = require('path');
 var OUT = path.join(__dirname, '..', 'js', 'config.js');
 var DEFAULT_SLUG = 'xp-tablero-9f3a7c2e';
 var DEFAULT_MEMBERS = ['Milca', 'Diana', 'Giovanni', 'Christian', 'Angel'];
+// Respaldo si las Environment variables de Netlify están vacías o no existen.
+// La clave publishable es pública por diseño (viaja al navegador); la
+// seguridad la dan las políticas RLS. Las variables de Netlify tienen prioridad.
+var DEFAULT_URL = 'https://sfotsgmjxlkvotyttaoa.supabase.co';
+var DEFAULT_KEY = 'sb_publishable_xeJFklmwYsNIQQGl615cyQ_MKJvfgvF';
 
 function fail(msg) {
   console.error('');
@@ -33,8 +38,8 @@ function fail(msg) {
   process.exit(1);
 }
 
-var url = String(process.env.SUPABASE_URL || '').trim();
-var key = String(process.env.SUPABASE_ANON_KEY || '').trim();
+var url = String(process.env.SUPABASE_URL || '').trim() || DEFAULT_URL;
+var key = String(process.env.SUPABASE_ANON_KEY || '').trim() || DEFAULT_KEY;
 var slug = String(process.env.SUPABASE_BOARD_SLUG || '').trim() || DEFAULT_SLUG;
 var members = String(process.env.SUPABASE_MEMBERS || '')
   .split(',')
