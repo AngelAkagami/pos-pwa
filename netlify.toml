@@ -1,0 +1,22 @@
+# netlify.toml — preparación para despliegue estático.
+# Aún NO se despliega; este archivo solo deja listo el sitio.
+#
+# El sitio es 100% estático: no hay build de npm ni transformaciones.
+# Frontend (Netlify) + backend (Supabase). Netlify NO sincroniza datos
+# entre usuarios: eso lo hace Supabase Realtime.
+
+[build]
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Cabeceras de seguridad básicas (no sustituyen a las políticas RLS).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Cache-Control = "no-store"

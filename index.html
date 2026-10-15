@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Tablero XP colaborativo — Gestión de equipos e incidencias. 14 de octubre al 25 de noviembre de 2026.">
+  <meta name="theme-color" content="#0f172a">
+  <title>Tablero XP · Gestión de equipos e incidencias</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <div class="header-titles">
+        <h1>Tablero XP · Gestión de equipos e incidencias</h1>
+        <p class="subtitle">14 de octubre – 25 de noviembre de 2026 · <span lang="en">America/Mexico_City</span></p>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" id="btn-author" class="btn btn-ghost" aria-haspopup="dialog">
+          Identificado como: <strong id="author-name">sin elegir</strong>
+        </button>
+        <button type="button" id="btn-add-task" class="btn btn-primary">Nueva actividad</button>
+      </div>
+
+      <div class="toolbar" role="group" aria-label="Vista del tablero">
+        <button type="button" id="btn-expand-all" class="btn btn-small">Expandir todas</button>
+        <button type="button" id="btn-collapse-all" class="btn btn-small">Contraer todas</button>
+        <button type="button" id="btn-export-md" class="btn btn-small">Copiar resumen (Markdown)</button>
+        <button type="button" id="btn-export-csv" class="btn btn-small">Descargar CSV</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="conn-bar" class="conn-bar is-idle" role="status" aria-live="polite">
+    <span id="conn-bar-text">Cargando tablero…</span>
+    <button type="button" id="conn-bar-action" class="btn btn-small" hidden>Reintentar</button>
+  </div>
+
+  <main id="main">
+    <!-- Barra de progreso global -->
+    <section class="wrap global-progress" aria-labelledby="global-progress-title">
+      <h2 id="global-progress-title" class="sr-only">Progreso global</h2>
+      <div class="progress-caption">
+        <span id="global-count">0 de 0 actividades completadas</span>
+        <strong id="global-pct">0 %</strong>
+      </div>
+      <div class="progress" role="progressbar" id="global-bar"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+           aria-valuetext="0 % de actividades completadas">
+        <i id="global-fill" style="width:0%"></i>
+      </div>
+    </section>
+
+    <!-- Filtros -->
+    <section class="wrap filters" aria-labelledby="filters-title">
+      <h2 id="filters-title" class="filters-title">Filtros</h2>
+      <div class="filters-grid">
+        <div class="field">
+          <label for="filter-week">Semana</label>
+          <select id="filter-week">
+            <option value="all">Todas las semanas</option>
+            <option value="1">Semana 1 · 14–20 oct</option>
+            <option value="2">Semana 2 · 21–27 oct</option>
+            <option value="3">Semana 3 · 28 oct–3 nov</option>
+            <option value="4">Semana 4 · 4–10 nov</option>
+            <option value="5">Semana 5 · 11–17 nov</option>
+            <option value="6">Semana 6 · 18–24 nov</option>
+            <option value="final">Entrega final · 25 nov</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="filter-member">Integrante</label>
+          <select id="filter-member">
+            <option value="all">Todos</option>
+            <option value="Milca">Milca</option>
+            <option value="Diana">Diana</option>
+            <option value="Giovanni">Giovanni</option>
+            <option value="Christian">Christian</option>
+            <option value="Angel">Angel</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="filter-status">Estado</label>
+          <select id="filter-status">
+            <option value="all">Todas</option>
+            <option value="pending">Pendientes</option>
+            <option value="done">Completadas</option>
+          </select>
+        </div>
+        <div class="field field-grow">
+          <label for="filter-search">Buscar</label>
+          <input type="search" id="filter-search" placeholder="Buscar actividad…" maxlength="120" autocomplete="off">
+        </div>
+        <div class="field field-action">
+          <button type="button" id="btn-clear-filters" class="btn btn-ghost">Limpiar filtros</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Estados de carga / configuración / error -->
+    <section id="skeleton" class="wrap" aria-hidden="true">
+      <div class="sk-card"><div class="sk-line w40"></div><div class="sk-line"></div><div class="sk-line w70"></div></div>
+      <div class="sk-card"><div class="sk-line w40"></div><div class="sk-line"></div><div class="sk-line w70"></div></div>
+      <div class="sk-card"><div class="sk-line w40"></div><div class="sk-line"></div><div class="sk-line w70"></div></div>
+    </section>
+
+    <section id="setup-screen" class="wrap" hidden>
+      <div class="panel panel-info">
+        <h2>Falta la configuración de Supabase</h2>
+        <p>La aplicación todavía no tiene credenciales para conectar con la base de datos compartida.
+          <strong>No se está simulando la sincronización:</strong> hasta configurarla, el tablero no carga datos.</p>
+        <ol class="steps">
+          <li>Crea un proyecto en <a href="https://supabase.com" rel="noopener noreferrer" target="_blank">supabase.com</a>.</li>
+          <li>En <em>SQL Editor</em>, ejecuta <code>supabase/schema.sql</code> y luego <code>supabase/seed.sql</code>.</li>
+          <li>Copia <code>js/config.example.js</code> a <code>js/config.js</code> y pega la <em>Project URL</em> y la clave <em>anon/public</em>.</li>
+          <li>Recarga esta página.</li>
+        </ol>
+        <p class="hint">Consulta el <code>README.md</code> para el procedimiento completo.</p>
+      </div>
+    </section>
+
+    <section id="error-screen" class="wrap" hidden>
+      <div class="panel panel-error">
+        <h2>No se pudo cargar el tablero</h2>
+        <p id="error-screen-text">Error desconocido.</p>
+        <button type="button" id="btn-retry-load" class="btn btn-primary">Reintentar</button>
+      </div>
+    </section>
+
+    <!-- Semanas (renderizadas con jQuery) -->
+    <div id="weeks-container" class="wrap"></div>
+
+    <!-- Entrega final -->
+    <section id="final-section" class="wrap" aria-labelledby="final-title" hidden>
+      <article class="week-card final-card">
+        <div class="week-head final-head">
+          <div class="week-head-main">
+            <h2 id="final-title">Entrega final — 25 de noviembre</h2>
+            <p class="week-dates">Integración, pruebas, corrección de defectos y demostración</p>
+          </div>
+          <div class="week-head-right">
+            <span class="week-count" id="final-count">0/0</span>
+          </div>
+        </div>
+        <div class="week-body">
+          <div class="progress" role="progressbar" id="final-bar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <i id="final-fill" style="width:0%"></i>
+          </div>
+          <ul class="task-list" id="final-list"></ul>
+        </div>
+      </article>
+    </section>
+
+    <!-- Estado vacío de filtros -->
+    <section id="empty-state" class="wrap" hidden>
+      <div class="panel panel-empty">
+        <h2>Sin resultados</h2>
+        <p>No hay actividades que coincidan con los filtros actuales.</p>
+        <button type="button" id="btn-clear-filters-2" class="btn btn-primary">Limpiar filtros</button>
+      </div>
+    </section>
+
+    <!-- Rutina XP -->
+    <section class="wrap xp-routine" aria-labelledby="xp-title">
+      <h2 id="xp-title">Rutina XP de cada iteración</h2>
+      <ul class="xp-grid">
+        <li>
+          <h3>1. Planificación</h3>
+          <p>El equipo define el alcance de la semana, las historias y los criterios de aceptación.</p>
+        </li>
+        <li>
+          <h3>2. Programación en parejas</h3>
+          <p>Rotación de roles <span lang="en">driver</span>/<span lang="en">navigator</span>: quien escribe guía, quien observa revisa en tiempo real.</p>
+        </li>
+        <li>
+          <h3>3. Integración y pruebas continuas</h3>
+          <p>Integración frecuente y automatizada. Marcar un checkbox registra avance; <strong>no equivale a pasar las pruebas de aceptación</strong>.</p>
+        </li>
+        <li>
+          <h3>4. Demo + retrospectiva</h3>
+          <p>Al cierre de cada iteración se muestra lo terminado y se acuerdan los cambios para la siguiente semana.</p>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p><strong>Aviso de acceso:</strong> cualquier persona con el enlace puede ver y editar este tablero.
+        El enlace <strong>no es autenticación</strong> y puede reenviarse. Los nombres de autoría son
+        autodeclarados y pueden suplantarse: la identificación es informal, no control de acceso.</p>
+      <p>Proyecto académico · Extreme Programming · 2026</p>
+    </div>
+  </footer>
+
+  <!-- Diálogo: editar / agregar actividad -->
+  <dialog id="task-dialog" aria-labelledby="task-dialog-title">
+    <form id="task-form" method="dialog" novalidate>
+      <h2 id="task-dialog-title">Editar actividad</h2>
+
+      <div class="field">
+        <label for="task-description">Descripción</label>
+        <textarea id="task-description" rows="3" maxlength="300" required
+                  placeholder="Describe la actividad…"></textarea>
+        <p class="field-hint"><span id="task-desc-count">0</span>/300 caracteres</p>
+        <p class="field-error" id="task-desc-error" hidden>Escribe una descripción (máximo 300 caracteres).</p>
+      </div>
+
+      <div class="field">
+        <label for="task-week">Semana</label>
+        <select id="task-week">
+          <option value="1">Semana 1 · 14–20 oct</option>
+          <option value="2">Semana 2 · 21–27 oct</option>
+          <option value="3">Semana 3 · 28 oct–3 nov</option>
+          <option value="4">Semana 4 · 4–10 nov</option>
+          <option value="5">Semana 5 · 11–17 nov</option>
+          <option value="6">Semana 6 · 18–24 nov</option>
+          <option value="final">Entrega final</option>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="task-assignee-1">Responsable 1</label>
+          <select id="task-assignee-1" required>
+            <option value="Milca">Milca</option>
+            <option value="Diana">Diana</option>
+            <option value="Giovanni">Giovanni</option>
+            <option value="Christian">Christian</option>
+            <option value="Angel">Angel</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="task-assignee-2">Responsable 2</label>
+          <select id="task-assignee-2">
+            <option value="">— sin segundo —</option>
+            <option value="Milca">Milca</option>
+            <option value="Diana">Diana</option>
+            <option value="Giovanni">Giovanni</option>
+            <option value="Christian">Christian</option>
+            <option value="Angel">Angel</option>
+          </select>
+        </div>
+      </div>
+      <p class="field-error" id="task-assignees-error" hidden>Elige responsables distintos (máximo 2).</p>
+
+      <div class="field">
+        <label for="task-due">Fecha de la actividad (opcional)</label>
+        <input type="date" id="task-due">
+      </div>
+
+      <p class="field-error" id="task-form-error" hidden></p>
+
+      <div class="dialog-actions">
+        <button type="button" id="task-dialog-cancel" class="btn btn-ghost">Cancelar</button>
+        <button type="submit" id="task-dialog-save" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Diálogo: identificación informal -->
+  <dialog id="author-dialog" aria-labelledby="author-dialog-title">
+    <form id="author-form" method="dialog">
+      <h2 id="author-dialog-title">¿Quién está editando?</h2>
+      <p>Elige tu nombre para que los demás sepan quién hizo el cambio.
+        Es una identificación informal para el equipo, <strong>no es un inicio de sesión</strong>:
+        no verifica tu identidad ni restringe el acceso.</p>
+      <fieldset class="author-options">
+        <legend class="sr-only">Integrante</legend>
+        <label><input type="radio" name="author" value="Milca"> Milca</label>
+        <label><input type="radio" name="author" value="Diana"> Diana</label>
+        <label><input type="radio" name="author" value="Giovanni"> Giovanni</label>
+        <label><input type="radio" name="author" value="Christian"> Christian</label>
+        <label><input type="radio" name="author" value="Angel"> Angel</label>
+      </fieldset>
+      <div class="dialog-actions">
+        <button type="button" id="author-dialog-cancel" class="btn btn-ghost" hidden>Cancelar</button>
+        <button type="submit" class="btn btn-primary">Usar este nombre</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toasts" class="toasts" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/supabase-service.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# Configuración real de Supabase (URL + clave anon).
+# Nunca se versiona: se copia desde js/config.example.js
+js/config.js
+
+# Dependencias
+node_modules/
+package-lock.json
+yarn.lock
+
+# Secretos (no deben existir jamás en este repositorio)
+.env
+.env.*
+!.env.example
+*.pem
+*-service-role.*
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/

@@ -1,0 +1,102 @@
+{
+  "project": {
+    "title": "Tablero XP — Gestión de equipos e incidencias",
+    "start_date": "2026-10-14",
+    "end_date": "2026-11-25",
+    "timezone": "America/Mexico_City",
+    "members": ["Milca", "Diana", "Giovanni", "Christian", "Angel"]
+  },
+  "weeks": [
+    {
+      "number": 1,
+      "start_date": "2026-10-14",
+      "end_date": "2026-10-20",
+      "goal": "Bases del sistema, seguridad y autenticación",
+      "deliverable": "Autenticación funcional, permisos base y definición de alumnos.",
+      "tasks": [
+        {"id": "W1-T1", "assignees": ["Milca", "Giovanni"], "description": "Definir roles y permisos; implementar guard de autorización y pruebas de acceso."},
+        {"id": "W1-T2", "assignees": ["Diana", "Christian"], "description": "Login web de administrador, validación de rol y manejo de errores."},
+        {"id": "W1-T3", "assignees": ["Angel", "Milca"], "description": "Login móvil, consumo de autenticación y almacenamiento seguro de sesión."},
+        {"id": "W1-T4", "assignees": ["Giovanni", "Diana"], "description": "Modelo de alumnos y definición del mecanismo de alta; revisar criterios pendientes."}
+      ]
+    },
+    {
+      "number": 2,
+      "start_date": "2026-10-21",
+      "end_date": "2026-10-27",
+      "goal": "Administración de técnicos, alumnos y equipos",
+      "deliverable": "Catálogos administrables de técnicos, equipos y alumnos.",
+      "tasks": [
+        {"id": "W2-T1", "assignees": ["Milca", "Christian"], "description": "Alta de técnicos, validación de correo/usuario y confirmación visual."},
+        {"id": "W2-T2", "assignees": ["Diana", "Angel"], "description": "Alta de equipos, validación de identificador y estado inicial Activo."},
+        {"id": "W2-T3", "assignees": ["Giovanni", "Christian"], "description": "Listado, edición y activación/desactivación de técnicos, conservando historial."},
+        {"id": "W2-T4", "assignees": ["Milca", "Diana"], "description": "Listado, filtros, edición y baja lógica/reactivación de equipos."},
+        {"id": "W2-T5", "assignees": ["Angel", "Giovanni"], "description": "Implementar el alta de alumnos acordada, baja lógica y conservación del historial."}
+      ]
+    },
+    {
+      "number": 3,
+      "start_date": "2026-10-28",
+      "end_date": "2026-11-03",
+      "goal": "Códigos QR y registro de uso",
+      "deliverable": "Flujo completo de escaneo, inicio y finalización de uso.",
+      "tasks": [
+        {"id": "W3-T1", "assignees": ["Milca", "Angel"], "description": "Generación de identificador y QR; visualización, regeneración e invalidación del anterior."},
+        {"id": "W3-T2", "assignees": ["Diana", "Giovanni"], "description": "Escaneo móvil, permisos de cámara y validación del equipo."},
+        {"id": "W3-T3", "assignees": ["Christian", "Angel"], "description": "Confirmación y registro de uso; evitar registros activos duplicados."},
+        {"id": "W3-T4", "assignees": ["Milca", "Diana"], "description": "Finalizar uso, duración, liberación del equipo y resumen."},
+        {"id": "W3-T5", "assignees": ["Giovanni", "Christian"], "description": "Exportación de QR, plantilla de etiquetas y generación por lote."}
+      ]
+    },
+    {
+      "number": 4,
+      "start_date": "2026-11-04",
+      "end_date": "2026-11-10",
+      "goal": "Historiales y reportes de incidencias",
+      "deliverable": "Reportes de incidencias e historiales consultables desde móvil.",
+      "tasks": [
+        {"id": "W4-T1", "assignees": ["Milca", "Giovanni"], "description": "Registro sin conexión, reintentos y pruebas de integración del uso."},
+        {"id": "W4-T2", "assignees": ["Diana", "Christian"], "description": "Historial de uso del alumno, paginación y estado vacío."},
+        {"id": "W4-T3", "assignees": ["Angel", "Milca"], "description": "Reporte de incidencias, validaciones, vinculación y folio."},
+        {"id": "W4-T4", "assignees": ["Giovanni", "Diana"], "description": "Adjuntar imágenes, validar formatos y configurar almacenamiento."},
+        {"id": "W4-T5", "assignees": ["Christian", "Angel"], "description": "Consulta de incidencias del alumno, detalle y actualización manual."}
+      ]
+    },
+    {
+      "number": 5,
+      "start_date": "2026-11-11",
+      "end_date": "2026-11-17",
+      "goal": "Atención y resolución de incidencias",
+      "deliverable": "Flujo de incidencia desde Pendiente hasta Resuelta.",
+      "tasks": [
+        {"id": "W5-T1", "assignees": ["Milca", "Christian"], "description": "Login de soporte, listado de incidencias y detalle con evidencias."},
+        {"id": "W5-T2", "assignees": ["Diana", "Angel"], "description": "Tomar incidencias, asignación y control de concurrencia."},
+        {"id": "W5-T3", "assignees": ["Giovanni", "Milca"], "description": "Transiciones de estado, historial y permisos del técnico asignado."},
+        {"id": "W5-T4", "assignees": ["Christian", "Diana"], "description": "Resolución con solución obligatoria, fecha y visualización."},
+        {"id": "W5-T5", "assignees": ["Angel", "Giovanni"], "description": "Mis incidencias, historial del técnico y consulta rápida mediante QR."}
+      ]
+    },
+    {
+      "number": 6,
+      "start_date": "2026-11-18",
+      "end_date": "2026-11-24",
+      "goal": "Panel administrativo, notificaciones y cierre técnico",
+      "deliverable": "Panel, estadísticas, exportaciones y notificaciones integradas.",
+      "tasks": [
+        {"id": "W6-T1", "assignees": ["Milca", "Diana"], "description": "Registros de uso administrativos, filtros, paginación y consistencia."},
+        {"id": "W6-T2", "assignees": ["Giovanni", "Christian"], "description": "Incidencias administrativas, filtros, detalles y antigüedad."},
+        {"id": "W6-T3", "assignees": ["Angel", "Milca"], "description": "Estadísticas, agregados y dashboard por periodo."},
+        {"id": "W6-T4", "assignees": ["Diana", "Giovanni"], "description": "Exportación PDF/CSV con filtros y fecha de generación."},
+        {"id": "W6-T5", "assignees": ["Christian", "Angel"], "description": "Notificaciones push para alumno y técnico; navegación y destinatarios."},
+        {"id": "W6-T6", "assignees": ["Milca", "Christian"], "description": "Logout, expiración de sesión y pruebas de rutas protegidas."}
+      ]
+    }
+  ],
+  "final_tasks": [
+    {"id": "F-1", "description": "Integrar las funcionalidades web, móvil y API."},
+    {"id": "F-2", "description": "Ejecutar pruebas de regresión y aceptación."},
+    {"id": "F-3", "description": "Corregir defectos críticos detectados."},
+    {"id": "F-4", "description": "Validar el cumplimiento de las historias y la Definition of Done."},
+    {"id": "F-5", "description": "Realizar la demostración final y entregar la documentación técnica."}
+  ]
+}
